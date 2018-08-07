@@ -1,6 +1,7 @@
 const config = require('./config');
 const layout = require('./layout');
 const locales = require('../common/locales');
+const User = require('../app/user');
 
 module.exports = function(req) {
   const locale = req.language || 'en-US';
@@ -17,6 +18,8 @@ module.exports = function(req) {
     },
     fira: false,
     fileInfo: {},
+    cspNonce: req.cspNonce,
+    user: new User(req.stuff, {}),
     layout
   };
 };

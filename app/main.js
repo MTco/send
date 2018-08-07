@@ -1,3 +1,4 @@
+/* global stuff */
 import 'fast-text-encoding'; // MS Edge support
 import 'fluent-intl-polyfill';
 import app from './routes';
@@ -11,6 +12,7 @@ import metrics from './metrics';
 import experiments from './experiments';
 import Raven from 'raven-js';
 import './main.css';
+import User from './user';
 
 (async function start() {
   if (navigator.doNotTrack !== '1' && window.RAVEN_CONFIG) {
@@ -27,6 +29,7 @@ import './main.css';
     state.translate = locale.getTranslator();
     state.storage = storage;
     state.raven = Raven;
+    state.user = new User(stuff, storage);
     window.appState = state;
     let unsupportedReason = null;
     if (

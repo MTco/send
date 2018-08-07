@@ -162,4 +162,5 @@ accountBenefitExpiry = Have more expiry options
 accountBenefitSync = Manage your uploads across devices
 accountBenefitNotify = Be notified when your files are downloaded
 accountBenefitMore = Do a lot more!
-
+manageAccount = Manage Account
+logOut = Sign Out

@@ -11,6 +11,9 @@ module.exports = function(state) {
     })
   )}
   </div>`;
+  if (el.__encoded) {
+    return el;
+  }
 
   const dlCountSelect = el.querySelector('#dlCount');
   el.replaceChild(

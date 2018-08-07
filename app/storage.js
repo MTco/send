@@ -93,6 +93,18 @@ class Storage {
     return this._files;
   }
 
+  get user() {
+    try {
+      return JSON.parse(this.engine.getItem('user'));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  set user(info) {
+    return this.engine.setItem('user', JSON.stringify(info));
+  }
+
   getFileById(id) {
     return this._files.find(f => f.id === id);
   }
