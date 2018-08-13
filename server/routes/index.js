@@ -4,7 +4,6 @@ const helmet = require('helmet');
 const storage = require('../storage');
 const config = require('../config');
 const auth = require('../middleware/auth');
-const owner = require('../middleware/owner');
 const language = require('../middleware/language');
 const pages = require('./pages');
 const fxa = require('./fxa');
@@ -37,11 +36,16 @@ module.exports = function(app) {
             'https://sentry.prod.mozaws.net',
             'https://www.google-analytics.com'
           ],
-          imgSrc: ["'self'", 'https://www.google-analytics.com'],
+          imgSrc: [
+            "'self'",
+            'https://www.google-analytics.com',
+            'https://*.dev.lcip.org',
+            'https://firefoxusercontent.com'
+          ],
           scriptSrc: [
             "'self'",
             function(req) {
-              return `nonce-${req.cspNonce}`;
+              return `'nonce-${req.cspNonce}'`;
             }
           ],
           styleSrc: ["'self'", 'https://code.cdn.mozilla.net'],
@@ -67,17 +71,21 @@ module.exports = function(app) {
   app.get(`/download/:id${ID_REGEX}`, language, pages.download);
   app.get('/completed', language, pages.blank);
   app.get('/unsupported/:reason', language, pages.unsupported);
-  app.get(`/api/download/:id${ID_REGEX}`, auth, require('./download'));
-  app.get(`/api/download/blob/:id${ID_REGEX}`, auth, require('./download'));
+  app.get(`/api/download/:id${ID_REGEX}`, auth.hmac, require('./download'));
+  app.get(
+    `/api/download/blob/:id${ID_REGEX}`,
+    auth.hmac,
+    require('./download')
+  );
   app.get(`/api/exists/:id${ID_REGEX}`, require('./exists'));
-  app.get(`/api/metadata/:id${ID_REGEX}`, auth, require('./metadata'));
+  app.get(`/api/metadata/:id${ID_REGEX}`, auth.hmac, require('./metadata'));
   app.get('/api/fxa/login', fxa.login);
   app.get('/api/fxa/oauth', fxa.oauth);
-  app.post('/api/upload', require('./upload'));
-  app.post(`/api/delete/:id${ID_REGEX}`, owner, require('./delete'));
-  app.post(`/api/password/:id${ID_REGEX}`, owner, require('./password'));
-  app.post(`/api/params/:id${ID_REGEX}`, owner, require('./params'));
-  app.post(`/api/info/:id${ID_REGEX}`, owner, require('./info'));
+  app.post('/api/upload', auth.fxa, require('./upload'));
+  app.post(`/api/delete/:id${ID_REGEX}`, auth.owner, require('./delete'));
+  app.post(`/api/password/:id${ID_REGEX}`, auth.owner, require('./password'));
+  app.post(`/api/params/:id${ID_REGEX}`, auth.owner, require('./params'));
+  app.post(`/api/info/:id${ID_REGEX}`, auth.owner, require('./info'));
 
   app.get('/__version__', function(req, res) {
     res.sendFile(require.resolve('../../dist/version.json'));
