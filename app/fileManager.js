@@ -4,7 +4,6 @@ import FileSender from './fileSender';
 import FileReceiver from './fileReceiver';
 import { copyToClipboard, delay, openLinksInNewTab, percent } from './utils';
 import * as metrics from './metrics';
-import { hasPassword } from './api';
 import Archive from './archive';
 import { bytes } from './utils';
 
@@ -185,17 +184,6 @@ export default function(state, emitter) {
     render();
   });
 
-  emitter.on('getPasswordExist', async ({ id }) => {
-    try {
-      state.fileInfo = await hasPassword(id);
-      render();
-    } catch (e) {
-      if (e.message === '404') {
-        return emitter.emit('pushState', '/404');
-      }
-    }
-  });
-
   emitter.on('getMetadata', async () => {
     const file = state.fileInfo;
 
@@ -204,7 +192,7 @@ export default function(state, emitter) {
       await receiver.getMetadata();
       state.transfer = receiver;
     } catch (e) {
-      if (e.message === '401') {
+      if (e.message === '401' || e.message === '404') {
         file.password = null;
         if (!file.requiresPassword) {
           return emitter.emit('pushState', '/404');

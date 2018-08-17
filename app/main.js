@@ -1,4 +1,4 @@
-/* global stuff */
+/* global userInfo */
 import 'fast-text-encoding'; // MS Edge support
 import 'fluent-intl-polyfill';
 import app from './routes';
@@ -29,7 +29,7 @@ import User from './user';
     state.translate = locale.getTranslator();
     state.storage = storage;
     state.raven = Raven;
-    state.user = new User(stuff, storage);
+    state.user = new User(userInfo, storage);
     window.appState = state;
     let unsupportedReason = null;
     if (

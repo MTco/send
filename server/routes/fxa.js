@@ -52,8 +52,8 @@ module.exports = {
         authorization: `Bearer ${zzz.access_token}`
       }
     });
-    const stuff = await p.json();
-    req.stuff = stuff;
+    const userInfo = await p.json();
+    req.userInfo = userInfo;
     pages.index(req, res);
   }
 };

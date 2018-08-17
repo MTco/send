@@ -19,7 +19,7 @@ module.exports = function(req) {
     fira: false,
     fileInfo: {},
     cspNonce: req.cspNonce,
-    user: new User(req.stuff, {}),
+    user: new User(req.userInfo, {}),
     layout
   };
 };
