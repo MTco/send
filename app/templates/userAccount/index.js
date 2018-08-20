@@ -1,12 +1,11 @@
 const html = require('choo/html');
 
-function absoluteLink(path) {
-  return typeof location === 'undefined'
-    ? path
-    : `${location.protocol}//${location.host}${path}`;
-}
+// function absoluteLink(path) {
+//   return typeof location === 'undefined'
+//     ? path
+//     : `${location.protocol}//${location.host}${path}`;
+// }
 
-// eslint-disable-next-line no-unused-vars
 module.exports = function(state, emit) {
   const user = state.user;
   const menu = user.loggedIn
@@ -26,10 +25,9 @@ module.exports = function(state, emit) {
           tabindex="-1"
     >
       <li>
-        <a href="${absoluteLink('/api/fxa/login')}"
-          class="account_dropdown__link">${state.translate(
-            'signInMenuOption'
-          )}</a>
+        <a class="account_dropdown__link" onclick=${login}>${state.translate(
+        'signInMenuOption'
+      )}</a>
       </li>
     </ul>
   `;
@@ -53,10 +51,14 @@ module.exports = function(state, emit) {
     dropdown.focus();
   }
 
+  function login(event) {
+    event.preventDefault();
+    emit('login');
+  }
+
   function logout(event) {
     event.preventDefault();
-    state.user.logout();
-    emit('render');
+    emit('logout');
   }
 
   //the onblur trick makes links unclickable wtf

@@ -113,6 +113,10 @@ class Storage {
     return this.engine.getItem(id);
   }
 
+  set(id, value) {
+    return this.engine.setItem(id, value);
+  }
+
   remove(property) {
     if (isFile(property)) {
       this._files.splice(this._files.findIndex(f => f.id === property), 1);

@@ -133,6 +133,7 @@ async function upload(
   metadata,
   verifierB64,
   timeLimit,
+  bearerToken,
   onprogress,
   canceller
 ) {
@@ -151,6 +152,7 @@ async function upload(
     const fileMeta = {
       fileMetadata: metadataHeader,
       authorization: `send-v1 ${verifierB64}`,
+      bearer: bearerToken,
       timeLimit
     };
 
@@ -192,8 +194,9 @@ export function uploadWs(
   encrypted,
   metadata,
   verifierB64,
-  onprogress,
-  timeLimit
+  timeLimit,
+  bearerToken,
+  onprogress
 ) {
   const canceller = { cancelled: false };
 
@@ -208,6 +211,7 @@ export function uploadWs(
       metadata,
       verifierB64,
       timeLimit,
+      bearerToken,
       onprogress,
       canceller
     )

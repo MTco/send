@@ -21,7 +21,7 @@ const conf = convict({
   },
   expire_times_seconds: {
     format: Array,
-    default: [300, 3600, 86400, 604800, 1209600],
+    default: [300, 3600, 86400, 604800],
     env: 'EXPIRE_TIMES_SECONDS'
   },
   default_expire_seconds: {
@@ -31,8 +31,23 @@ const conf = convict({
   },
   max_expire_seconds: {
     format: Number,
-    default: 1209600,
+    default: 86400 * 7,
     env: 'MAX_EXPIRE_SECONDS'
+  },
+  anon_max_expire_seconds: {
+    format: Number,
+    default: 86400,
+    env: 'ANON_MAX_EXPIRE_SECONDS'
+  },
+  max_downloads: {
+    format: Number,
+    default: 200,
+    env: 'MAX_DOWNLOADS'
+  },
+  anon_max_downloads: {
+    format: Number,
+    default: 20,
+    env: 'ANON_MAX_DOWNLOADS'
   },
   redis_host: {
     format: String,
@@ -77,8 +92,13 @@ const conf = convict({
   },
   max_file_size: {
     format: Number,
-    default: 1024 * 1024 * 1024 * 3,
+    default: 1024 * 1024 * 1024 * 4,
     env: 'MAX_FILE_SIZE'
+  },
+  anon_max_file_size: {
+    format: Number,
+    default: 1024 * 1024 * 500,
+    env: 'ANON_MAX_FILE_SIZE'
   },
   l10n_dev: {
     format: Boolean,

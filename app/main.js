@@ -13,6 +13,7 @@ import experiments from './experiments';
 import Raven from 'raven-js';
 import './main.css';
 import User from './user';
+import { decryptBundle } from './fxa';
 
 (async function start() {
   if (navigator.doNotTrack !== '1' && window.RAVEN_CONFIG) {
@@ -21,6 +22,9 @@ import User from './user';
   const capa = await capabilities();
   if (capa.streamDownload) {
     navigator.serviceWorker.register('/serviceWorker.js');
+  }
+  if (userInfo && userInfo.keys_jwe) {
+    userInfo.secret = await decryptBundle(storage, userInfo.keys_jwe);
   }
   app.use((state, emitter) => {
     state.capabilities = capa;

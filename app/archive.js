@@ -1,4 +1,3 @@
-/* global MAXFILESIZE */
 import { blobStream, concatStream } from './streams';
 
 function isDupe(newFile, array) {
@@ -49,18 +48,14 @@ export default class Archive {
     return concatStream(this.files.map(file => blobStream(file)));
   }
 
-  addFiles(files) {
+  addFiles(files, maxSize) {
     const newFiles = files.filter(file => !isDupe(file, this.files));
     const newSize = newFiles.reduce((total, file) => total + file.size, 0);
-    if (this.size + newSize > MAXFILESIZE) {
+    if (this.size + newSize > maxSize) {
       return false;
     }
     this.files = this.files.concat(newFiles);
     return true;
-  }
-
-  checkSize() {
-    return this.size <= MAXFILESIZE;
   }
 
   remove(index) {

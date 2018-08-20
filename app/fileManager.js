@@ -1,4 +1,3 @@
-/* global MAXFILESIZE */
 /* global DEFAULT_EXPIRE_SECONDS */
 import FileSender from './fileSender';
 import FileReceiver from './fileReceiver';
@@ -6,6 +5,7 @@ import { copyToClipboard, delay, openLinksInNewTab, percent } from './utils';
 import * as metrics from './metrics';
 import Archive from './archive';
 import { bytes } from './utils';
+import { prepareWrapKey } from './fxa';
 
 export default function(state, emitter) {
   let lastRender = 0;
@@ -56,6 +56,16 @@ export default function(state, emitter) {
     lastRender = Date.now();
   });
 
+  emitter.on('login', async () => {
+    const k = await prepareWrapKey(state.storage);
+    location.assign(`/api/fxa/login?keys_jwk=${k}`);
+  });
+
+  emitter.on('logout', () => {
+    state.user.logout();
+    render();
+  });
+
   emitter.on('changeLimit', async ({ file, value }) => {
     await file.changeLimit(value);
     state.storage.writeFile(file);
@@ -89,17 +99,18 @@ export default function(state, emitter) {
   });
 
   emitter.on('addFiles', async ({ files }) => {
+    const maxSize = state.user.maxSize;
     if (state.archive) {
-      if (!state.archive.addFiles(files)) {
+      if (!state.archive.addFiles(files, maxSize)) {
         // eslint-disable-next-line no-alert
-        alert(state.translate('fileTooBig', { size: bytes(MAXFILESIZE) }));
+        alert(state.translate('fileTooBig', { size: bytes(maxSize) }));
         return;
       }
     } else {
       const archive = new Archive(files);
-      if (!archive.checkSize()) {
+      if (archive.size > maxSize) {
         // eslint-disable-next-line no-alert
-        alert(state.translate('fileTooBig', { size: bytes(MAXFILESIZE) }));
+        alert(state.translate('fileTooBig', { size: bytes(maxSize) }));
         return;
       }
       state.archive = archive;
@@ -111,7 +122,11 @@ export default function(state, emitter) {
     if (!state.archive) return;
     const size = state.archive.size;
     if (!state.timeLimit) state.timeLimit = DEFAULT_EXPIRE_SECONDS;
-    const sender = new FileSender(state.archive, state.timeLimit);
+    const sender = new FileSender(
+      state.archive,
+      state.timeLimit,
+      state.user.bearerToken
+    );
 
     sender.on('progress', updateProgress);
     sender.on('encrypting', render);

@@ -35,6 +35,11 @@ if (isIE && !isUnsupportedPage) {
   window.location.replace('/unsupported/ie');
 }
 var MAXFILESIZE = ${config.max_file_size};
+var ANON_MAXFILESIZE = ${config.anon_max_file_size};
+var MAX_DOWNLOADS = ${config.max_downloads};
+var ANON_MAX_DOWNLOADS = ${config.anon_max_downloads};
+var MAX_EXPIRE_SECONDS = ${config.max_expire_seconds};
+var ANON_MAX_EXPIRE_SECONDS = ${config.anon_max_expire_seconds};
 var DEFAULT_EXPIRE_SECONDS = ${config.default_expire_seconds};
 ${ga}
 ${sentry}

@@ -1,12 +1,8 @@
+/* global MAXFILESIZE ANON_MAXFILESIZE MAX_EXPIRE_SECONDS ANON_MAX_EXPIRE_SECONDS MAX_DOWNLOADS ANON_MAX_DOWNLOADS  */
 const assets = require('../common/assets');
-// In dev assets aren't populated at require time...
-let DEFAULT_AVATAR = assets.get('user.svg');
 
 class User {
   constructor(info, storage) {
-    if (DEFAULT_AVATAR === 'undefined') {
-      DEFAULT_AVATAR = assets.get('user.svg');
-    }
     if (info && storage) {
       storage.user = info;
     }
@@ -15,10 +11,11 @@ class User {
   }
 
   get avatar() {
+    const defaultAvatar = assets.get('user.svg');
     if (this.data.avatarDefault) {
-      return DEFAULT_AVATAR;
+      return defaultAvatar;
     }
-    return this.data.avatar || DEFAULT_AVATAR;
+    return this.data.avatar || defaultAvatar;
   }
 
   get name() {
@@ -30,7 +27,23 @@ class User {
   }
 
   get loggedIn() {
-    return !!this.data.uid;
+    return !!this.data.access_token;
+  }
+
+  get bearerToken() {
+    return this.data.access_token;
+  }
+
+  get maxSize() {
+    return this.loggedIn ? MAXFILESIZE : ANON_MAXFILESIZE;
+  }
+
+  get maxExpireSeconds() {
+    return this.loggedIn ? MAX_EXPIRE_SECONDS : ANON_MAX_EXPIRE_SECONDS;
+  }
+
+  get maxDownloads() {
+    return this.loggedIn ? MAX_DOWNLOADS : ANON_MAX_DOWNLOADS;
   }
 
   login() {}
