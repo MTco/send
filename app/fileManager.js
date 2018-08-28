@@ -146,7 +146,7 @@ export default function(state, emitter) {
       metrics.completedUpload(ownedFile);
 
       state.storage.addFile(ownedFile);
-
+      state.user.syncFileList(); //TODO move me
       if (password) {
         emitter.emit('password', { password, file: ownedFile });
       }

@@ -7,6 +7,7 @@ const auth = require('../middleware/auth');
 const language = require('../middleware/language');
 const pages = require('./pages');
 const fxa = require('./fxa');
+const filelist = require('./filelist');
 
 const IS_DEV = config.env === 'development';
 const ID_REGEX = '([0-9a-fA-F]{10})';
@@ -81,6 +82,8 @@ module.exports = function(app) {
   app.get(`/api/metadata/:id${ID_REGEX}`, auth.hmac, require('./metadata'));
   app.get('/api/fxa/login', fxa.login);
   app.get('/api/fxa/oauth', fxa.oauth);
+  app.get('/api/filelist', auth.fxa, filelist.get);
+  app.post('/api/filelist', auth.fxa, filelist.post);
   app.post('/api/upload', auth.fxa, require('./upload'));
   app.post(`/api/delete/:id${ID_REGEX}`, auth.owner, require('./delete'));
   app.post(`/api/password/:id${ID_REGEX}`, auth.owner, require('./password'));

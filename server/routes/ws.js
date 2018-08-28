@@ -5,7 +5,7 @@ const mozlog = require('../log');
 const Limiter = require('../limiter');
 const Parser = require('../streamparser');
 const wsStream = require('websocket-stream/stream');
-const fxa = require('./fxa');
+// const fxa = require('./fxa');
 
 const log = mozlog('send.upload');
 
@@ -27,7 +27,7 @@ module.exports = function(ws, req) {
       const timeLimit = fileInfo.timeLimit;
       const metadata = fileInfo.fileMetadata;
       const auth = fileInfo.authorization;
-      const user = await fxa.verify(fileInfo.bearer);
+      const user = '1'; //await fxa.verify(fileInfo.bearer); // TODO
       const maxFileSize = user
         ? config.max_file_size
         : config.anon_max_file_size;

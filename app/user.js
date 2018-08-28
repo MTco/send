@@ -1,7 +1,14 @@
 /* global MAXFILESIZE ANON_MAXFILESIZE MAX_EXPIRE_SECONDS ANON_MAX_EXPIRE_SECONDS MAX_DOWNLOADS ANON_MAX_DOWNLOADS  */
-const assets = require('../common/assets');
+import assets from '../common/assets';
+import { getFileList, setFileList } from './api';
+import { encryptStream, decryptStream } from './ece';
+import { b64ToArray, streamToArrayBuffer } from './utils';
+import { blobStream } from './streams';
 
-class User {
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
+
+export default class User {
   constructor(info, storage) {
     if (info && storage) {
       storage.user = info;
@@ -53,9 +60,38 @@ class User {
     this.data = {};
   }
 
+  async syncFileList() {
+    if (!this.loggedIn) {
+      return true;
+    }
+    let list = [];
+    try {
+      const encrypted = await getFileList(this.bearerToken);
+      const decrypted = await streamToArrayBuffer(
+        decryptStream(encrypted, b64ToArray(this.fileListKey))
+      );
+      list = JSON.parse(textDecoder.decode(decrypted));
+    } catch (e) {
+      //
+    }
+    for (const file of list) {
+      this.storage.addFile(file);
+    }
+    try {
+      const encrypted = await streamToArrayBuffer(
+        encryptStream(
+          blobStream(textEncoder.encode(JSON.stringify(this.storage.files))),
+          b64ToArray(this.fileListKey)
+        )
+      );
+      const ok = await setFileList(this.bearerToken, encrypted);
+      return ok;
+    } catch (e) {
+      return false;
+    }
+  }
+
   toJSON() {
     return this.data;
   }
 }
-
-module.exports = User;

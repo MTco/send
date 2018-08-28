@@ -328,3 +328,19 @@ export function downloadFile(id, keychain, onprogress) {
     result: tryDownload(id, keychain, onprogress, canceller, 2)
   };
 }
+
+export async function getFileList(bearerToken) {
+  const headers = new Headers({ Authorization: `Bearer ${bearerToken}` });
+  const response = await fetch('/api/filelist', { headers });
+  return response.body; // stream
+}
+
+export async function setFileList(bearerToken, data) {
+  const headers = new Headers({ Authorization: `Bearer ${bearerToken}` });
+  const response = await fetch('/api/filelist', {
+    headers,
+    method: 'POST',
+    body: data
+  });
+  return response.status === 200;
+}
